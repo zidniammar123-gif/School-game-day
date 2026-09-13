@@ -10,6 +10,7 @@
     box-sizing: border-box;
     user-select: none;
     -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 html, body {
@@ -26,19 +27,17 @@ html, body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background: #d9d9d9;
+    touch-action: none;
 }
 
 #world {
     position: absolute;
     width: 1800px;
     height: 1200px;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    left: 0;
+    top: 0;
 }
 
-/* Lantai */
 .floor {
     position: absolute;
     inset: 0;
@@ -49,7 +48,6 @@ html, body {
     background-color: #c9b99a;
 }
 
-/* Dinding */
 .wall {
     position: absolute;
     background: #eee;
@@ -83,7 +81,6 @@ html, body {
     height: 1200px;
 }
 
-/* Papan tulis */
 .board {
     position: absolute;
     left: 650px;
@@ -106,7 +103,6 @@ html, body {
     font-weight: bold;
 }
 
-/* Meja */
 .desk {
     position: absolute;
     width: 150px;
@@ -128,7 +124,6 @@ html, body {
     box-shadow: 95px 0 #54351f;
 }
 
-/* Kursi */
 .chair {
     position: absolute;
     width: 65px;
@@ -138,17 +133,33 @@ html, body {
     border: 4px solid #315574;
 }
 
-/* Player & NPC */
+/* =========================
+   CHARACTER
+========================= */
+
 .character {
     position: absolute;
-    width: 44px;
-    height: 58px;
-    border-radius: 18px 18px 12px 12px;
     z-index: 20;
-    transition: none;
 }
 
-.character .head {
+.player {
+    width: 60px;
+    height: 80px;
+}
+
+.player img {
+    width: 60px;
+    height: 80px;
+    object-fit: contain;
+    display: block;
+}
+
+.npc {
+    width: 44px;
+    height: 58px;
+}
+
+.npc .head {
     position: absolute;
     width: 38px;
     height: 38px;
@@ -159,25 +170,18 @@ html, body {
     border: 2px solid rgba(0,0,0,.2);
 }
 
-.character .body {
+.npc .body {
     position: absolute;
     left: 5px;
     top: 8px;
     width: 34px;
     height: 45px;
     border-radius: 10px;
-}
-
-.player .body {
-    background: #2878d0;
-}
-
-.npc .body {
     background: #d44b4b;
 }
 
-.character .head::before,
-.character .head::after {
+.npc .head::before,
+.npc .head::after {
     content: "";
     position: absolute;
     width: 5px;
@@ -187,11 +191,11 @@ html, body {
     background: #222;
 }
 
-.character .head::before {
+.npc .head::before {
     left: 9px;
 }
 
-.character .head::after {
+.npc .head::after {
     right: 9px;
 }
 
@@ -208,7 +212,10 @@ html, body {
     font-size: 12px;
 }
 
-/* Joystick */
+/* =========================
+   JOYSTICK
+========================= */
+
 #joystick {
     position: fixed;
     left: 25px;
@@ -216,9 +223,9 @@ html, body {
     width: 135px;
     height: 135px;
     border-radius: 50%;
-    background: rgba(0,0,0,.22);
-    border: 3px solid rgba(255,255,255,.5);
-    z-index: 100;
+    background: rgba(0,0,0,.30);
+    border: 3px solid rgba(255,255,255,.55);
+    z-index: 9999;
     touch-action: none;
 }
 
@@ -228,38 +235,40 @@ html, body {
     height: 62px;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    margin-left: -31px;
+    margin-top: -31px;
     border-radius: 50%;
-    background: rgba(255,255,255,.7);
+    background: rgba(255,255,255,.8);
     border: 3px solid rgba(0,0,0,.25);
+    pointer-events: none;
 }
 
-/* Petunjuk */
 #info {
     position: fixed;
     top: 15px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 100;
+    z-index: 9999;
     padding: 10px 16px;
     border-radius: 10px;
     color: white;
     background: rgba(0,0,0,.65);
     font-size: 14px;
     text-align: center;
+    pointer-events: none;
 }
 
-/* NPC status */
 #npcStatus {
     position: fixed;
     right: 15px;
     top: 15px;
-    z-index: 100;
+    z-index: 9999;
     padding: 8px 12px;
     border-radius: 8px;
     color: white;
     background: rgba(0,0,0,.55);
     font-size: 13px;
+    pointer-events: none;
 }
 </style>
 </head>
@@ -268,80 +277,82 @@ html, body {
 
 <div id="game">
 
-    <div id="world">
-        <div class="floor"></div>
+<div id="world">
 
-        <div class="wall top"></div>
-        <div class="wall bottom"></div>
-        <div class="wall left"></div>
-        <div class="wall right"></div>
+<div class="floor"></div>
 
-        <div class="board"></div>
+<div class="wall top"></div>
+<div class="wall bottom"></div>
+<div class="wall left"></div>
+<div class="wall right"></div>
 
-        <!-- Meja -->
-        <div class="desk" style="left:250px;top:330px"></div>
-        <div class="desk" style="left:550px;top:330px"></div>
-        <div class="desk" style="left:850px;top:330px"></div>
-        <div class="desk" style="left:1150px;top:330px"></div>
+<div class="board"></div>
 
-        <div class="desk" style="left:250px;top:600px"></div>
-        <div class="desk" style="left:550px;top:600px"></div>
-        <div class="desk" style="left:850px;top:600px"></div>
-        <div class="desk" style="left:1150px;top:600px"></div>
+<!-- MEJA -->
+<div class="desk" style="left:250px;top:330px"></div>
+<div class="desk" style="left:550px;top:330px"></div>
+<div class="desk" style="left:850px;top:330px"></div>
+<div class="desk" style="left:1150px;top:330px"></div>
 
-        <!-- Kursi -->
-        <div class="chair" style="left:292px;top:435px"></div>
-        <div class="chair" style="left:592px;top:435px"></div>
-        <div class="chair" style="left:892px;top:435px"></div>
-        <div class="chair" style="left:1192px;top:435px"></div>
+<div class="desk" style="left:250px;top:600px"></div>
+<div class="desk" style="left:550px;top:600px"></div>
+<div class="desk" style="left:850px;top:600px"></div>
+<div class="desk" style="left:1150px;top:600px"></div>
 
-        <div class="chair" style="left:292px;top:705px"></div>
-        <div class="chair" style="left:592px;top:705px"></div>
-        <div class="chair" style="left:892px;top:705px"></div>
-        <div class="chair" style="left:1192px;top:705px"></div>
+<!-- KURSI -->
+<div class="chair" style="left:292px;top:435px"></div>
+<div class="chair" style="left:592px;top:435px"></div>
+<div class="chair" style="left:892px;top:435px"></div>
+<div class="chair" style="left:1192px;top:435px"></div>
 
-        <!-- Player -->
-        <div id="player" class="character player">
-            <div class="name">PLAYER</div>
-            <div class="head"></div>
-            <div class="body"></div>
-        </div>
+<div class="chair" style="left:292px;top:705px"></div>
+<div class="chair" style="left:592px;top:705px"></div>
+<div class="chair" style="left:892px;top:705px"></div>
+<div class="chair" style="left:1192px;top:705px"></div>
 
-        <!-- NPC -->
-        <div id="npc1" class="character npc">
-            <div class="name">NPC 1</div>
-            <div class="head"></div>
-            <div class="body"></div>
-        </div>
+<!-- PLAYER -->
+<div id="player" class="character player">
+    <img src="dummy.png" alt="Player">
+    <div class="name">PLAYER</div>
+</div>
 
-        <div id="npc2" class="character npc">
-            <div class="name">NPC 2</div>
-            <div class="head"></div>
-            <div class="body"></div>
-        </div>
+<!-- NPC -->
+<div id="npc1" class="character npc">
+    <div class="name">NPC 1</div>
+    <div class="head"></div>
+    <div class="body"></div>
+</div>
 
-        <div id="npc3" class="character npc">
-            <div class="name">NPC 3</div>
-            <div class="head"></div>
-            <div class="body"></div>
-        </div>
-    </div>
+<div id="npc2" class="character npc">
+    <div class="name">NPC 2</div>
+    <div class="head"></div>
+    <div class="body"></div>
+</div>
 
-    <div id="info">
-        🕹️ Joystick / ⌨️ WASD — Gerakkan Player
-    </div>
+<div id="npc3" class="character npc">
+    <div class="name">NPC 3</div>
+    <div class="head"></div>
+    <div class="body"></div>
+</div>
 
-    <div id="npcStatus">
-        🤖 NPC bergerak
-    </div>
+</div>
 
-    <div id="joystick">
-        <div id="stick"></div>
-    </div>
+<div id="info">
+🕹️ Joystick / ⌨️ WASD — Gerakkan Player
+</div>
+
+<div id="npcStatus">
+🤖 NPC bergerak
+</div>
+
+<div id="joystick">
+    <div id="stick"></div>
+</div>
 
 </div>
 
 <script>
+
 const world = document.getElementById("world");
 const player = document.getElementById("player");
 const joystick = document.getElementById("joystick");
@@ -353,7 +364,7 @@ const WORLD_H = 1200;
 let playerX = 900;
 let playerY = 950;
 
-let keys = {
+const keys = {
     w:false,
     a:false,
     s:false,
@@ -364,35 +375,41 @@ let joyX = 0;
 let joyY = 0;
 let joystickActive = false;
 
-const speed = 4.5;
+const playerSpeed = 4.5;
+
 
 /* =========================
-   KEYBOARD WASD
+   WASD
 ========================= */
 
-document.addEventListener("keydown", e => {
-    const k = e.key.toLowerCase();
+window.addEventListener("keydown", function(e) {
 
-    if (k === "w") keys.w = true;
-    if (k === "a") keys.a = true;
-    if (k === "s") keys.s = true;
-    if (k === "d") keys.d = true;
+    const key = e.key.toLowerCase();
+
+    if (key === "w") keys.w = true;
+    if (key === "a") keys.a = true;
+    if (key === "s") keys.s = true;
+    if (key === "d") keys.d = true;
+
 });
 
-document.addEventListener("keyup", e => {
-    const k = e.key.toLowerCase();
+window.addEventListener("keyup", function(e) {
 
-    if (k === "w") keys.w = false;
-    if (k === "a") keys.a = false;
-    if (k === "s") keys.s = false;
-    if (k === "d") keys.d = false;
+    const key = e.key.toLowerCase();
+
+    if (key === "w") keys.w = false;
+    if (key === "a") keys.a = false;
+    if (key === "s") keys.s = false;
+    if (key === "d") keys.d = false;
+
 });
+
 
 /* =========================
    JOYSTICK
 ========================= */
 
-function updateJoystick(clientX, clientY) {
+function moveJoystick(clientX, clientY) {
 
     const rect = joystick.getBoundingClientRect();
 
@@ -402,48 +419,114 @@ function updateJoystick(clientX, clientY) {
     let dx = clientX - centerX;
     let dy = clientY - centerY;
 
-    const max = 48;
+    const maxDistance = 48;
 
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance > max) {
-        dx = dx / distance * max;
-        dy = dy / distance * max;
+    if (distance > maxDistance) {
+
+        dx = dx / distance * maxDistance;
+        dy = dy / distance * maxDistance;
+
     }
 
-    joyX = dx / max;
-    joyY = dy / max;
+    joyX = dx / maxDistance;
+    joyY = dy / maxDistance;
 
-    stick.style.transform =
-        `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    stick.style.left = `calc(50% + ${dx}px)`;
+    stick.style.top = `calc(50% + ${dy}px)`;
+
 }
 
+
 function resetJoystick() {
+
+    joystickActive = false;
+
     joyX = 0;
     joyY = 0;
 
-    stick.style.transform =
-        "translate(-50%, -50%)";
+    stick.style.left = "50%";
+    stick.style.top = "50%";
 
-    joystickActive = false;
 }
 
-joystick.addEventListener("pointerdown", e => {
+
+/* Pointer */
+
+joystick.addEventListener("pointerdown", function(e) {
+
+    e.preventDefault();
+
     joystickActive = true;
+
     joystick.setPointerCapture(e.pointerId);
-    updateJoystick(e.clientX, e.clientY);
+
+    moveJoystick(e.clientX, e.clientY);
+
 });
 
-joystick.addEventListener("pointermove", e => {
+
+joystick.addEventListener("pointermove", function(e) {
+
     if (!joystickActive) return;
-    updateJoystick(e.clientX, e.clientY);
+
+    e.preventDefault();
+
+    moveJoystick(e.clientX, e.clientY);
+
 });
+
 
 joystick.addEventListener("pointerup", resetJoystick);
 joystick.addEventListener("pointercancel", resetJoystick);
 
+
+/* Touch fallback */
+
+joystick.addEventListener("touchstart", function(e) {
+
+    e.preventDefault();
+
+    joystickActive = true;
+
+    const touch = e.touches[0];
+
+    moveJoystick(
+        touch.clientX,
+        touch.clientY
+    );
+
+}, {passive:false});
+
+
+joystick.addEventListener("touchmove", function(e) {
+
+    e.preventDefault();
+
+    if (!joystickActive) return;
+
+    const touch = e.touches[0];
+
+    moveJoystick(
+        touch.clientX,
+        touch.clientY
+    );
+
+}, {passive:false});
+
+
+joystick.addEventListener("touchend", function(e) {
+
+    e.preventDefault();
+
+    resetJoystick();
+
+}, {passive:false});
+
+
 /* =========================
-   PLAYER SMOOTH MOVEMENT
+   PLAYER
 ========================= */
 
 function updatePlayer() {
@@ -457,65 +540,86 @@ function updatePlayer() {
     if (keys.d) dx += 1;
 
     if (joystickActive) {
+
         dx += joyX;
         dy += joyY;
+
     }
 
     const length = Math.sqrt(dx * dx + dy * dy);
 
     if (length > 1) {
+
         dx /= length;
         dy /= length;
+
     }
 
-    playerX += dx * speed;
-    playerY += dy * speed;
+    playerX += dx * playerSpeed;
+    playerY += dy * playerSpeed;
 
-    playerX = Math.max(110, Math.min(WORLD_W - 110, playerX));
-    playerY = Math.max(150, Math.min(WORLD_H - 110, playerY));
+    playerX = Math.max(
+        110,
+        Math.min(WORLD_W - 110, playerX)
+    );
+
+    playerY = Math.max(
+        150,
+        Math.min(WORLD_H - 110, playerY)
+    );
 
     player.style.left = playerX + "px";
     player.style.top = playerY + "px";
+
 }
 
+
 /* =========================
-   NPC SMOOTH AI
+   NPC
 ========================= */
 
 const npcs = [
-    {
-        el: document.getElementById("npc1"),
-        x: 400,
-        y: 500,
-        tx: 400,
-        ty: 500,
-        speed: 1.4
-    },
-    {
-        el: document.getElementById("npc2"),
-        x: 1000,
-        y: 520,
-        tx: 1000,
-        ty: 520,
-        speed: 1.2
-    },
-    {
-        el: document.getElementById("npc3"),
-        x: 1350,
-        y: 850,
-        tx: 1350,
-        ty: 850,
-        speed: 1.5
-    }
+
+{
+    el: document.getElementById("npc1"),
+    x:400,
+    y:500,
+    tx:400,
+    ty:500,
+    speed:1.4
+},
+
+{
+    el: document.getElementById("npc2"),
+    x:1000,
+    y:520,
+    tx:1000,
+    ty:520,
+    speed:1.2
+},
+
+{
+    el: document.getElementById("npc3"),
+    x:1350,
+    y:850,
+    tx:1350,
+    ty:850,
+    speed:1.5
+}
+
 ];
+
 
 function chooseTarget(npc) {
 
     npc.tx = 150 + Math.random() * 1450;
     npc.ty = 280 + Math.random() * 700;
+
 }
 
+
 npcs.forEach(chooseTarget);
+
 
 function updateNPC(npc) {
 
@@ -525,20 +629,23 @@ function updateNPC(npc) {
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance < 15) {
+
         chooseTarget(npc);
         return;
+
     }
 
     dx /= distance;
     dy /= distance;
 
-    /* Smooth movement */
     npc.x += dx * npc.speed;
     npc.y += dy * npc.speed;
 
     npc.el.style.left = npc.x + "px";
     npc.el.style.top = npc.y + "px";
+
 }
+
 
 /* =========================
    CAMERA
@@ -555,12 +662,21 @@ function updateCamera() {
     const minX = screenW - WORLD_W;
     const minY = screenH - WORLD_H;
 
-    cameraX = Math.min(0, Math.max(minX, cameraX));
-    cameraY = Math.min(0, Math.max(minY, cameraY));
+    cameraX = Math.min(
+        0,
+        Math.max(minX, cameraX)
+    );
+
+    cameraY = Math.min(
+        0,
+        Math.max(minY, cameraY)
+    );
 
     world.style.transform =
         `translate(${cameraX}px, ${cameraY}px)`;
+
 }
+
 
 /* =========================
    GAME LOOP
@@ -575,13 +691,16 @@ function gameLoop() {
     updateCamera();
 
     requestAnimationFrame(gameLoop);
+
 }
+
 
 player.style.left = playerX + "px";
 player.style.top = playerY + "px";
 
 gameLoop();
+
 </script>
 
 </body>
-</html>
+    </html>
